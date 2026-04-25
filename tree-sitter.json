@@ -1,0 +1,42 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "diamond",
+      "camelcase": "Diamond",
+      "title": "Diamond",
+      "scope": "source.diamond",
+      "file-types": [
+        "di"
+      ],
+      "injection-regex": "^diamond$",
+      "class-name": "TreeSitterDiamond"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "GPLv3",
+    "description": "Diamond Treesitter",
+    "authors": [
+      {
+        "name": "Elisabeth Wenger-Stickel",
+        "email": "ewengerstickel@protonmail.com",
+        "url": ""
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/tree-sitter/tree-sitter-diamond",
+      "funding": ""
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": false,
+    "java": false,
+    "node": false,
+    "python": false,
+    "rust": true,
+    "swift": false,
+    "zig": false
+  }
+}
