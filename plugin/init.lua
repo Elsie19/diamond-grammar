@@ -1,13 +1,7 @@
-vim.filetype.add({
-    extension = {
-        di = "di",
-    },
-})
-
 vim.treesitter.language.register('diamond', { 'di' })
 
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = "*.di",
+    pattern = "di",
     callback = function(event) vim.bo[event.buf].commentstring = "# %s" end,
 })
 
