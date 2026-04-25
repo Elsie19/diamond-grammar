@@ -47,7 +47,7 @@ export default grammar({
     func_def_expr: $ => seq(
       "let",
       optional("~internal"),
-      $.ident,
+      field("name", $.ident),
       "(",
       optional($.func_def_args),
       ")",
@@ -61,7 +61,7 @@ export default grammar({
       repeat(seq(",", $.func_arg))
     ),
 
-    func_arg: $ => seq($.ident, ":", $.type_name),
+    func_arg: $ => seq(field("name", $.ident), ":", field("type", $.type_name)),
 
     func_def_ret: $ => seq(":", $.type_name),
 

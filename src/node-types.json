@@ -118,20 +118,27 @@
   {
     "type": "func_arg",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "ident",
-          "named": true
-        },
-        {
-          "type": "type_name",
-          "named": true
-        }
-      ]
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ident",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_name",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -167,7 +174,18 @@
   {
     "type": "func_def_expr",
     "named": true,
-    "fields": {},
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ident",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
@@ -182,10 +200,6 @@
         },
         {
           "type": "func_def_ret",
-          "named": true
-        },
-        {
-          "type": "ident",
           "named": true
         }
       ]

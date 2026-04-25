@@ -2,9 +2,8 @@
 (func_def_expr
   (ident) @definition.function)
 
-(func_def_expr
-  (func_arg
-    (ident) @definition.parameter))
+(func_arg
+  (ident) @definition.parameter)
 
 ; match binds a variable
 (match_arm
