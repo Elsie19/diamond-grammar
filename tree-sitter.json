@@ -10,6 +10,8 @@
         "di"
       ],
       "injection-regex": "^diamond$",
+      "highlights": "queries/diamond/highlights.scm",
+      "locals": "queries/diamond/locals.scm",
       "class-name": "TreeSitterDiamond"
     }
   ],
@@ -25,7 +27,7 @@
       }
     ],
     "links": {
-      "repository": "https://github.com/tree-sitter/tree-sitter-diamond",
+      "repository": "https://github.com/Elsie19/diamond-grammar",
       "funding": ""
     }
   },
