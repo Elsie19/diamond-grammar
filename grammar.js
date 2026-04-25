@@ -11,100 +11,154 @@ export default grammar({
   name: "diamond",
 
   extras: $ => [
-    /\s/,
     $.comment,
+    /[ \t\r\n]+/,
   ],
 
-  word: $ => $.ident,
-
   rules: {
-    source_file: $ => repeat($.stmt),
+    program: $ => repeat($.stmt_or_expr),
 
-    stmt: $ => seq($.expr, ';'),
+    stmt_or_expr: $ => choice($.stmt, $.expr),
+
+    stmt: $ => seq($.expr, ";"),
 
     expr: $ => choice(
       $.match_expr,
       $.for_expr,
       $.func_def_expr,
       $.assign_expr,
-      $.call_expr,
-      $.rust_expr,
-      $.grouping_expr,
+      $.func_expr,
+      $.grouping,
       $.value
     ),
 
+    grouping: $ => seq(
+      "{",
+      repeat($.stmt_or_expr),
+      optional($.redirect),
+      "}"
+    ),
+
+    redirect: $ => seq("<", $.expr),
+
+    // -------------------
+    // function definition
+    // -------------------
     func_def_expr: $ => seq(
-      'let',
-      optional($.internal),
-      $.func_name,
-      '(',
+      "let",
+      optional("~internal"),
+      $.ident,
+      "(",
       optional($.func_def_args),
-      ')',
+      ")",
       optional($.func_def_ret),
-      '=',
+      "=",
       $.expr
     ),
 
-    internal: $ => token('~internal'),
-
-    func_name: $ => seq('@', $.ident),
-
-    func_def_ret: $ => seq(':', $.type_name),
-
     func_def_args: $ => seq(
       $.func_arg,
-      repeat(seq(',', $.func_arg))
+      repeat(seq(",", $.func_arg))
     ),
 
-    func_arg: $ => seq($.ident, ':', $.type_name),
+    func_arg: $ => seq($.ident, ":", $.type_name),
 
-    grouping_expr: $ => seq(
-      '{',
-      repeat($.stmt),
-      optional($.expr),
-      '}',
-      optional($.redirect)
-    ),
+    func_def_ret: $ => seq(":", $.type_name),
 
-    call_expr: $ => seq(
-      $.func_name,
-      '(',
+    // -------------------
+    // function call
+    // -------------------
+    func_expr: $ => seq(
+      $.ident,
+      "(",
       optional($.func_call_args),
-      ')',
-      optional($.result_unwrap)
+      ")",
+      optional("!")
     ),
 
     func_call_args: $ => seq(
       $.expr,
-      repeat(seq(',', $.expr))
+      repeat(seq(",", $.expr))
     ),
 
+    // -------------------
+    // assignment
+    // -------------------
+    assign_expr: $ => seq(
+      "let",
+      $.ident,
+      "=",
+      $.expr
+    ),
+
+    // -------------------
+    // match
+    // -------------------
+    match_expr: $ => seq(
+      "match",
+      "(",
+      $.expr,
+      ")",
+      "{",
+      optional(seq($.match_arm, repeat(seq(",", $.match_arm)), optional(","))),
+      "}"
+    ),
+
+    match_arm: $ => seq(
+      $.result_branch,
+      $.ident,
+      "=",
+      $.expr
+    ),
+
+    result_branch: _ => choice("ok", "err"),
+
+    // -------------------
+    // for
+    // -------------------
+    for_expr: $ => seq(
+      "for",
+      "(",
+      $.for_inner,
+      ")",
+      $.expr
+    ),
+
+    for_inner: $ => seq($.ident, "in", $.expr),
+
+    // -------------------
+    // types
+    // -------------------
     type_name: $ => choice(
       $.type_array,
       $.result_type,
       $.atomic_type
     ),
 
-    type_array: $ => seq('[', $.type_name, ']'),
-
-    atomic_type: $ => choice(
-      'integer',
-      'stream',
-      'string',
-      'file',
-      'unit',
-      'unret'
-    ),
+    type_array: $ => seq("[", $.type_name, "]"),
 
     result_type: $ => seq(
-      'result',
-      '(',
+      "result",
+      "(",
       $.type_name,
-      ',',
+      ",",
       $.type_name,
-      ')'
+      ")"
     ),
 
+    atomic_type: _ => choice(
+      "integer",
+      "stream",
+      "string",
+      "file",
+      "unit",
+      "unret",
+      "any"
+    ),
+
+    // -------------------
+    // values
+    // -------------------
     value: $ => choice(
       $.ident,
       $.integer,
@@ -113,72 +167,24 @@ export default grammar({
       $.unit_lit
     ),
 
-    string_lit: $ => seq('"', repeat(/[^"]/), '"'),
-
     array_lit: $ => seq(
-      '[',
+      "[",
       optional($.func_call_args),
-      ']'
+      "]"
     ),
 
-    unit_lit: $ => seq('(', ')'),
+    unit_lit: _ => "()",
 
-    assign_expr: $ => seq(
-      'let',
-      $.ident,
-      '=',
-      $.expr
+    string_lit: $ => seq(
+      "\"",
+      repeat(/[^"]/),
+      "\""
     ),
 
-    match_expr: $ => seq(
-      'match',
-      '(',
-      $.expr,
-      ')',
-      '{',
-      $.match_arm,
-      repeat(seq(',', $.match_arm)),
-      optional(','),
-      '}'
-    ),
+    ident: _ => /[a-zA-Z][a-zA-Z0-9_]*/,
 
-    match_arm: $ => seq(
-      $.result_branch,
-      $.ident,
-      '=',
-      $.expr
-    ),
+    integer: _ => /[0-9]+/,
 
-    result_branch: $ => choice('ok', 'err'),
-
-    result_unwrap: $ => '!',
-
-    for_expr: $ => seq(
-      'for',
-      '(',
-      $.for_inner,
-      ')',
-      $.expr
-    ),
-
-    for_inner: $ => seq(
-      $.ident,
-      'in',
-      $.expr
-    ),
-
-    rust_expr: $ => seq(
-      'rust',
-      '{',
-      choice($.stmt, $.expr),
-      '}'
-    ),
-
-    redirect: $ => seq('<', $.expr),
-
-    ident: $ => /[a-zA-Z][a-zA-Z0-9_]*/,
-    integer: $ => /\d+/,
-
-    comment: $ => token(seq('#', /.*/)),
+    comment: _ => token(seq("#", /.*/)),
   }
 });

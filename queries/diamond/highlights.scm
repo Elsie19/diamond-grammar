@@ -1,42 +1,35 @@
-[
-  "let" "match" "for" "in" "rust"
-] @keyword
+; keywords
+"let" @keyword
+"match" @keyword
+"for" @keyword
+"in" @keyword
 
-[
-  "ok" "err"
-] @keyword
+"ok" @keyword
+"err" @keyword
+"result" @type.builtin
 
-(internal) @attribute
-
-(func_def_expr
-  (func_name (ident) @function))
-
-(call_expr
-  (func_name (ident) @function.call))
-
-(ident) @variable
-
+; types
 (atomic_type) @type.builtin
 (type_name) @type
 
+; functions
+(func_def_expr (ident) @function)
+(func_expr (ident) @function.call)
+
+; literals
 (integer) @number
 (string_lit) @string
-(unit_lit) @constant
+(unit_lit) @constant.builtin
 
-(match_arm
-  (ident) @variable.parameter)
-
-(result_unwrap) @operator
-
-[
-  "=" "<"
-] @operator
-
-"," @punctuation.delimiter
+; punctuation
 ";" @punctuation.delimiter
+"," @punctuation.delimiter
+"(" @punctuation.bracket
+")" @punctuation.bracket
+"{" @punctuation.bracket
+"}" @punctuation.bracket
+"[" @punctuation.bracket
+"]" @punctuation.bracket
 
-[
-  "(" ")" "{" "}" "[" "]"
-] @punctuation.bracket
-
+; comments
 (comment) @comment

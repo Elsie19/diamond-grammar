@@ -1,13 +1,18 @@
+; function definitions define a scope
 (func_def_expr
-  (func_name (ident) @local.definition.function))
+  (ident) @definition.function)
 
-(func_arg
-  (ident) @local.definition.parameter)
+(func_def_expr
+  (func_arg
+    (ident) @definition.parameter))
 
-(assign_expr
-  (ident) @local.definition.var)
-
+; match binds a variable
 (match_arm
-  (ident) @local.definition.var)
+  _ (ident) @definition.var)
 
-(ident) @local.reference
+; for-loop binding
+(for_inner
+  (ident) @definition.var)
+
+; references
+(ident) @reference
